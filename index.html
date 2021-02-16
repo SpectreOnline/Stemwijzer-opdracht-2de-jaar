@@ -13,19 +13,42 @@
 </head>
 
 <body>
-    <div id="container">
+    <div id="container" class="col-12 text-center">
         <h1 id="title"></h1>
 
         <p id="description"></p>
     </div>
 
-
-    <button type="button" class="btn btn-primary">Volgende</button>
-    <button type="button" class="btn btn-primary">Vorige</button>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <div class="col-12 text-center">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="statementChoice" id="disagree" value="contra">
+                Oneens
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="statementChoice" id="dontknow" value="dontknow">
+                Weet ik niet
+            </label>
+        </div>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="statementChoice" id="agree" value="pro">
+                Eens
+            </label>
+        </div>
+    </div>
+    <div id="btnContainer" class="col-12 text-center">
+        <button type="button" class="btn btn-primary" id="prevBtn">Vorige</button>
+        <button type="button" class="btn btn-primary" id="nextBtn">Volgende</button>
+    </div>
     <script src="http://stemwijzer.dvc-icta.nl/testdata.js"></script>
     <script src="assets/js/main.js"></script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
