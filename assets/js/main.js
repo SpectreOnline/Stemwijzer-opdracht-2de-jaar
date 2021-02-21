@@ -91,6 +91,12 @@ function changeStatement() {
     // en slaat de stelling over
     if (statementId <= subjects.length && this.id == "skipBtn") {
         userAnswers[statementId] = "";
+        statementOptions.forEach(element => {
+            if (element.checked) {
+                userAnswers[statementId] = element.value;
+                element.checked = false;
+            }
+        });
         statementId++;
         setStatement(subjects[statementId]);
     }
