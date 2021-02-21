@@ -87,6 +87,14 @@ function changeStatement() {
         setStatement(subjects[statementId]);
     }
 
+    // Deze if statement detecteert of deze knop de sla over knop is
+    // en slaat de stelling over
+    if (statementId <= subjects.length && this.id == "skipBtn") {
+        userAnswers[statementId] = "";
+        statementId++;
+        setStatement(subjects[statementId]);
+    }
+
     if (userAnswers.length == subjects.length && this.name == "statementChoice") {
         var nextBtn = document.getElementById("nextBtn");
         nextBtn.disabled = false;
@@ -145,6 +153,5 @@ function compareUserAnswerToPartyAnswers() {
 //TODO:
 
 // Een startknop met startpagina aanmaken voor de stemwijzer
-// een knop aanmaken waarmee de gebruiker een stelling kan overslaan
 // In het startmenu kan de gebruiker kiezen welke stelling belangrijk is
 // Gekozen belangrijke stellingen moeten meer score geven in berekening.
