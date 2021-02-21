@@ -17,6 +17,11 @@ var partyOpinion = [];
 
 startTest();
 
+/*
+* Start de stemwijzer, veranderd de functionaliteit van de knoppen
+* Genereert een array waarin benodigde informatie zoals de meningen
+* van de politieke partijen worden opgeslagen
+*/
 function startTest() {
     setStatement(subjects[0]);
     statementOptions.forEach(element => {
@@ -34,7 +39,10 @@ function startTest() {
     }
 }
 
-
+/*
+* Genereer een array met daarin alle partijen en hun antwoorden op
+* de stellingen
+*/
 function generateOpinionSequence(party) {
     var opinionArray = [];
     subjects.forEach(subject => {
@@ -49,7 +57,9 @@ function generateOpinionSequence(party) {
     return opinionArray
 }
 
-
+/* 
+* Detecteer op welke knop is gedrukt en verander de stelling
+*/
 function changeStatement() {
 
     if (statementId <= subjects.length && this.name == "statementChoice") {
@@ -87,6 +97,11 @@ function changeStatement() {
 
 }
 
+/*
+*  Pas de elementen aan de content van een stelling
+*  Check of de gebruiker de stelling al heeft beantwoord
+*  Zo ja selecteer het antwoord zodat de gebruiker het kan zien
+*/
 function setStatement(subject) {
     title.innerHTML = subject.title;
     descriptionField.innerHTML = subject.statement;
@@ -98,9 +113,12 @@ function setStatement(subject) {
     });
 }
 
-// voor elke keer dat userAnswer gelijk is aan de mening van een partij 
-//(partyOpinion.opinionsequence)
-// voeg een punt toe voor die partij
+/* voor elke keer dat userAnswer gelijk is aan de mening van een partij 
+*  voeg een punt toe voor die partij
+*
+*  sorteer daarna de partijen op scores en laat de partij met de
+*  hoogste score zien
+*/
 
 function compareUserAnswerToPartyAnswers() {
 
