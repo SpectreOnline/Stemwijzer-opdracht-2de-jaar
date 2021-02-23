@@ -14,8 +14,24 @@ var partyOpinion = [];
 // Lees over compound statements
 // Lees over docblock
 
+startWebPage();
 
-startTest();
+function startWebPage() {
+    title.innerHTML = "Welkom bij de stemwijzer";
+    clickableButtons.forEach(element => {
+        if (element.id == "nextBtn") {
+            element.innerHTML = "Start de stemwijzer";
+            element.onclick = function () {
+                startTest();
+            }
+        } else {
+            element.hidden = true;
+        }
+    });
+    statementFields.forEach(element => {
+        element.hidden = true;
+    });
+}
 
 /*
 * Start de stemwijzer, veranderd de functionaliteit van de knoppen
@@ -27,8 +43,16 @@ function startTest() {
     statementOptions.forEach(element => {
         element.onclick = changeStatement;
     });
+    statementFields.forEach(element => {
+        element.hidden = false;
+    });
     clickableButtons.forEach(element => {
+        element.hidden = false;
         element.onclick = changeStatement;
+        if (element.id == "nextBtn") {
+            element.disabled = true;
+            element.innerHTML = "Rond de test af";
+        }
     });
     for (i = 0; i < parties.length; i++) {
         partyOpinion.push({
@@ -82,9 +106,16 @@ function changeStatement() {
 
     // deze if statement detecteerd of de knop de gebruiker naar de vorige
     // stelling stuurt
-    if (statementId > 0 && this.id == "prevBtn") {
-        statementId--;
-        setStatement(subjects[statementId]);
+    if (statementId > 0) {
+        clickableButtons.forEach(element => {
+            if (element.id == "prevBtn") {
+                element.disabled = false;
+            }
+        });
+        if (this.id == "prevBtn") {
+            statementId--;
+            setStatement(subjects[statementId]);
+        }
     }
 
     /* 
