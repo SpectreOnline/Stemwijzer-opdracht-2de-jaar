@@ -87,8 +87,13 @@ function changeStatement() {
         setStatement(subjects[statementId]);
     }
 
-    // Deze if statement detecteert of deze knop de sla over knop is
-    // en slaat de stelling over
+    /* 
+    *Deze if statement detecteert of deze knop de sla over knop is
+    * en slaat de stelling over
+    *
+    * Deze knop veranderd uiteindelijk in een rond de test af knop
+    * bij de laaste stelling
+    */
     if (statementId <= subjects.length && this.id == "skipBtn") {
         userAnswers[statementId] = "";
         statementOptions.forEach(element => {
@@ -97,16 +102,27 @@ function changeStatement() {
                 element.checked = false;
             }
         });
-        statementId++;
-        setStatement(subjects[statementId]);
-    }
-
-    if (userAnswers.length == subjects.length && this.name == "statementChoice") {
-        var nextBtn = document.getElementById("nextBtn");
-        nextBtn.disabled = false;
-        nextBtn.onclick = function () {
+        if (statementId < subjects.length - 1) {
+            statementId++;
+            setStatement(subjects[statementId]);
+        } else {
             compareUserAnswerToPartyAnswers();
         }
+    }
+
+    // Deze if statement detecteerd of de gebruiker bij de laatste vraag
+    // is aangekomen en wanneer dit het geval is geeft de afrond knop
+    // zijn functionaliteit en zet hem aan
+    if (userAnswers.length == subjects.length && this.name == "statementChoice") {
+
+        clickableButtons.forEach(element => {
+            if (element.id == "nextBtn") {
+                element.disabled = false;
+                element.onclick = function () {
+                    compareUserAnswerToPartyAnswers();
+                }
+            }
+        });
     }
 
 }
