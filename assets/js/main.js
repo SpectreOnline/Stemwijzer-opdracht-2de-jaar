@@ -194,7 +194,7 @@ function compareUserAnswerToPartyAnswers() {
     partyOpinion.sort(function (a, b) { return b.score - a.score });
 
     title.innerHTML = "De partij die het best bij u past is " + partyOpinion[0].party;
-    descriptionField.innerHTML = "";
+    descriptionField.innerHTML = `De twee partijen hierna zijn ${partyOpinion[1].party} en ${partyOpinion[2].party}`;
     statementFields.forEach(element => {
         element.hidden = true;
     });
@@ -205,6 +205,6 @@ function compareUserAnswerToPartyAnswers() {
 
 //TODO:
 
-// Een startknop met startpagina aanmaken voor de stemwijzer
 // In het startmenu kan de gebruiker kiezen welke stelling belangrijk is
 // Gekozen belangrijke stellingen moeten meer score geven in berekening.
+// De gebruiker kan partijen filteren in de resultaten
