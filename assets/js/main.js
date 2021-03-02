@@ -2,9 +2,11 @@ const clickableButtons = document.querySelectorAll(".btn");
 const statementOptions = document.querySelectorAll(".form-check-input");
 const statementFields = document.querySelectorAll(".form-check");
 const container = document.getElementById("container");
+const afterTestField = document.getElementById("afterTestField");
 const title = document.getElementById("title");
 const descriptionField = document.getElementById("description");
 var userAnswers = [];
+var statementIsImportantArray = [];
 var statementId = 0;
 var partyOpinion = [];
 
@@ -18,19 +20,46 @@ startWebPage();
 
 function startWebPage() {
     title.innerHTML = "Welkom bij de stemwijzer";
-    clickableButtons.forEach(element => {
-        if (element.id == "nextBtn") {
-            element.innerHTML = "Start de stemwijzer";
-            element.onclick = function () {
-                startTest();
+    setButtonMode("start", "Start de stemwijzer");
+}
+
+function setButtonMode(mode, mainButtonTxt) {
+    if (mode == "start" || mode == "end") {
+        clickableButtons.forEach(element => {
+            if (element.id == "nextBtn") {
+                element.innerHTML = mainButtonTxt;
+                if (mode == "start") {
+                    element.onclick = function () {
+                        startTest();
+                    }
+                }
+                if (mode == "end") {
+                    element.onclick = function () {
+                        compareUserAnswerToPartyAnswers();
+                    }
+                }
+            } else {
+                element.hidden = true;
             }
-        } else {
+        });
+        statementFields.forEach(element => {
             element.hidden = true;
-        }
-    });
-    statementFields.forEach(element => {
-        element.hidden = true;
-    });
+        });
+    }
+    if (mode == "advanced") {
+        statementFields.forEach(element => {
+            element.hidden = false;
+        });
+        clickableButtons.forEach(element => {
+            element.hidden = false;
+            element.onclick = changeStatement;
+            if (element.id == "nextBtn") {
+                element.disabled = true;
+                element.innerHTML = mainButtonTxt;
+            }
+        });
+    }
+
 }
 
 /*
@@ -43,17 +72,7 @@ function startTest() {
     statementOptions.forEach(element => {
         element.onclick = changeStatement;
     });
-    statementFields.forEach(element => {
-        element.hidden = false;
-    });
-    clickableButtons.forEach(element => {
-        element.hidden = false;
-        element.onclick = changeStatement;
-        if (element.id == "nextBtn") {
-            element.disabled = true;
-            element.innerHTML = "Rond de test af";
-        }
-    });
+    setButtonMode("advanced", "Volgende stap");
     for (i = 0; i < parties.length; i++) {
         partyOpinion.push({
             party: parties[i].name,
@@ -150,7 +169,7 @@ function changeStatement() {
             if (element.id == "nextBtn") {
                 element.disabled = false;
                 element.onclick = function () {
-                    compareUserAnswerToPartyAnswers();
+                    recordStatementImportance();
                 }
             }
         });
@@ -174,6 +193,34 @@ function setStatement(subject) {
     });
 }
 
+/*
+* Deze functie verwijt de gebruiker naar een serie aan
+* checkboxes waarmee de gebruiker kan aangeven welke
+* stellingen het meest belangrijk zijn
+*/
+function recordStatementImportance() {
+    afterTestField.hidden = false;
+    var loopCount = 0;
+    subjects.forEach(subject => {
+        var newCheckbox = document.createElement("input");
+        newCheckbox.type = "checkbox";
+        newCheckbox.id = loopCount;
+        newCheckbox.setAttribute("class", "mr-2 ml-1 statementCheckbox");
+        var newLabel = document.createElement("label");
+        newLabel.innerHTML = subject.title;
+        var newLine = document.createElement("br");
+        afterTestField.append(newLabel);
+        afterTestField.append(newCheckbox);
+        afterTestField.append(newLine);
+        newCheckbox = null;
+        loopCount++;
+    });
+    setButtonMode("end", "Rond de test af");
+    title.innerHTML = "Welke stelling(en) zijn belangrijk?";
+    descriptionField.innerHTML = "";
+}
+
+
 /* voor elke keer dat userAnswer gelijk is aan de mening van een partij 
 *  voeg een punt toe voor die partij
 *
@@ -182,12 +229,23 @@ function setStatement(subject) {
 */
 
 function compareUserAnswerToPartyAnswers() {
-
+    var statementCheckboxes = document.querySelectorAll(".statementCheckbox");
+    statementCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            statementIsImportantArray[checkbox.id] = true;
+        } else {
+            statementIsImportantArray[checkbox.id] = false;
+        }
+    });
     for (var a = 0; a < partyOpinion.length; a++) {
         for (var b = 0; b < userAnswers.length; b++) {
             if (userAnswers[b] == partyOpinion[a].opinionSequence[b]) {
                 partyOpinion[a].score++;
+                if (statementIsImportantArray[b]) {
+                    partyOpinion[a].score++;
+                }
             }
+
         }
     }
 
@@ -205,6 +263,4 @@ function compareUserAnswerToPartyAnswers() {
 
 //TODO:
 
-// In het startmenu kan de gebruiker kiezen welke stelling belangrijk is
-// Gekozen belangrijke stellingen moeten meer score geven in berekening.
 // De gebruiker kan partijen filteren in de resultaten
