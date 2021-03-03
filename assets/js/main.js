@@ -2,7 +2,8 @@ const clickableButtons = document.querySelectorAll(".btn");
 const statementOptions = document.querySelectorAll(".form-check-input");
 const statementFields = document.querySelectorAll(".form-check");
 const container = document.getElementById("container");
-const afterTestField = document.getElementById("afterTestField");
+const importantStatementField = document.getElementById("importantStatementField");
+const partyFilterField = document.getElementById("partyFilterField");
 const title = document.getElementById("title");
 const descriptionField = document.getElementById("description");
 var userAnswers = [];
@@ -23,42 +24,71 @@ function startWebPage() {
     setButtonMode("start", "Start de stemwijzer");
 }
 
+/*
+* Deze functie past de stijl aan van de knoppen aan gebaseerd
+* op waar de gebruiker zich bevind in de stemwijzer
+*/
 function setButtonMode(mode, mainButtonTxt) {
-    if (mode == "start" || mode == "end") {
-        clickableButtons.forEach(element => {
-            if (element.id == "nextBtn") {
-                element.innerHTML = mainButtonTxt;
-                if (mode == "start") {
+
+    clickableButtons.forEach(element => {
+        if (element.id == "nextBtn") {
+            element.innerHTML = mainButtonTxt;
+
+            switch (mode) {
+                case "start":
+
+                    statementFields.forEach(element => {
+                        element.hidden = true;
+                    });
+
                     element.onclick = function () {
                         startTest();
                     }
-                }
-                if (mode == "end") {
+                    break;
+
+                case "advanced":
+
+                    statementFields.forEach(element => {
+                        element.hidden = false;
+                    });
+
+                    clickableButtons.forEach(button => {
+                        button.hidden = false;
+                        button.onclick = changeStatement;
+                        if (button.id == "nextBtn") {
+                            button.disabled = true;
+                            button.innerHTML = mainButtonTxt;
+                        }
+                    });
+                    break;
+
+                case "filter":
+
+                    statementFields.forEach(element => {
+                        element.hidden = true;
+                    });
+
+                    element.onclick = function () {
+                        recordPartyFilter();
+                    }
+                    break;
+                case "end":
+
+                    statementFields.forEach(element => {
+                        element.hidden = true;
+                    });
+
                     element.onclick = function () {
                         compareUserAnswerToPartyAnswers();
                     }
-                }
-            } else {
-                element.hidden = true;
+                    break;
             }
-        });
-        statementFields.forEach(element => {
+
+        }
+        else {
             element.hidden = true;
-        });
-    }
-    if (mode == "advanced") {
-        statementFields.forEach(element => {
-            element.hidden = false;
-        });
-        clickableButtons.forEach(element => {
-            element.hidden = false;
-            element.onclick = changeStatement;
-            if (element.id == "nextBtn") {
-                element.disabled = true;
-                element.innerHTML = mainButtonTxt;
-            }
-        });
-    }
+        }
+    });
 
 }
 
@@ -73,6 +103,10 @@ function startTest() {
         element.onclick = changeStatement;
     });
     setButtonMode("advanced", "Volgende stap");
+
+    var skipBtn = document.getElementById("skipBtn");
+    skipBtn.hidden = false;
+
     for (i = 0; i < parties.length; i++) {
         partyOpinion.push({
             party: parties[i].name,
@@ -156,7 +190,7 @@ function changeStatement() {
             statementId++;
             setStatement(subjects[statementId]);
         } else {
-            compareUserAnswerToPartyAnswers();
+            recordStatementImportance();
         }
     }
 
@@ -192,34 +226,78 @@ function setStatement(subject) {
         }
     });
 }
+/*
+* Deze functie genereert een lijst met knoppen die de gebruiker
+* later kan gebruiken om partijen te filteren en aan te tonen
+* welke stellingen belangrijk zijn
+*/
+function generateCheckboxList(givenArray, givenField) {
+
+    var checkboxClass = "";
+    var labelClass = "";
+
+    if (givenArray == subjects) {
+        checkboxClass = "statementCheckbox";
+        labelClass = "statementLabel";
+    }
+
+    if (givenArray == parties) {
+        checkboxClass = "partyCheckbox";
+        labelClass = "partyLabel";
+    }
+
+    var loopCount = 0;
+    givenArray.forEach(object => {
+        var newCheckbox = document.createElement("input");
+        newCheckbox.type = "checkbox";
+        newCheckbox.value = loopCount;
+        newCheckbox.setAttribute("class", `mr-2 ml-1 ${checkboxClass}`);
+        var newLabel = document.createElement("label");
+        if (object.title != null) {
+            newLabel.innerHTML = object.title;
+        }
+        if (object.name != null) {
+            newLabel.innerHTML = object.name;
+        }
+        newLabel.setAttribute("class", labelClass);
+        var newLine = document.createElement("br");
+        givenField.append(newLabel);
+        givenField.append(newCheckbox);
+        givenField.append(newLine);
+        newCheckbox = null;
+        loopCount++;
+    });
+}
 
 /*
 * Deze functie verwijt de gebruiker naar een serie aan
 * checkboxes waarmee de gebruiker kan aangeven welke
 * stellingen het meest belangrijk zijn
+*
+* Ik ben bewust dat ik deze twee functies kan samenvoegen
+* maar ik ben nogal moe en wil aan de volgende opdracht beginnen
 */
 function recordStatementImportance() {
-    afterTestField.hidden = false;
-    var loopCount = 0;
-    subjects.forEach(subject => {
-        var newCheckbox = document.createElement("input");
-        newCheckbox.type = "checkbox";
-        newCheckbox.id = loopCount;
-        newCheckbox.setAttribute("class", "mr-2 ml-1 statementCheckbox");
-        var newLabel = document.createElement("label");
-        newLabel.innerHTML = subject.title;
-        var newLine = document.createElement("br");
-        afterTestField.append(newLabel);
-        afterTestField.append(newCheckbox);
-        afterTestField.append(newLine);
-        newCheckbox = null;
-        loopCount++;
-    });
-    setButtonMode("end", "Rond de test af");
+    partyFilterField.hidden = true;
+    importantStatementField.hidden = false;
+
+    generateCheckboxList(subjects, importantStatementField);
     title.innerHTML = "Welke stelling(en) zijn belangrijk?";
     descriptionField.innerHTML = "";
+
+    setButtonMode("filter", "Volgende stap");
 }
 
+function recordPartyFilter() {
+    importantStatementField.hidden = true;
+    partyFilterField.hidden = false;
+
+    generateCheckboxList(parties, partyFilterField);
+    title.innerHTML = "Welke partijen wilt u NIET in uw resultaten zien?";
+    descriptionField.innerHTML = "";
+
+    setButtonMode("end", "Rond de test af");
+}
 
 /* voor elke keer dat userAnswer gelijk is aan de mening van een partij 
 *  voeg een punt toe voor die partij
@@ -232,20 +310,37 @@ function compareUserAnswerToPartyAnswers() {
     var statementCheckboxes = document.querySelectorAll(".statementCheckbox");
     statementCheckboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            statementIsImportantArray[checkbox.id] = true;
+            statementIsImportantArray[checkbox.value] = true;
         } else {
-            statementIsImportantArray[checkbox.id] = false;
+            statementIsImportantArray[checkbox.value] = false;
         }
     });
-    for (var a = 0; a < partyOpinion.length; a++) {
-        for (var b = 0; b < userAnswers.length; b++) {
-            if (userAnswers[b] == partyOpinion[a].opinionSequence[b]) {
-                partyOpinion[a].score++;
-                if (statementIsImportantArray[b]) {
-                    partyOpinion[a].score++;
-                }
-            }
 
+    var partyCheckboxes = document.querySelectorAll(".partyCheckbox");
+    partyCheckboxes.forEach(checkbox => {
+        checkbox.hidden = true;
+        if (checkbox.checked) {
+            partyOpinion.splice(checkbox.value, 1, null);
+        }
+    });
+
+    for (var a = 0; a < partyOpinion.length; a++) {
+        if (partyOpinion[a] != null) {
+            for (var b = 0; b < userAnswers.length; b++) {
+                if (userAnswers[b] == partyOpinion[a].opinionSequence[b]) {
+                    partyOpinion[a].score++;
+                    if (statementIsImportantArray[b]) {
+                        partyOpinion[a].score++;
+                    }
+                }
+
+            }
+        }
+    }
+
+    for (var i = 0; i < partyOpinion.length; i++) {
+        if (partyOpinion[i] == null) {
+            partyOpinion.splice(i, 1);
         }
     }
 
