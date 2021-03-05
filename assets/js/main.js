@@ -354,8 +354,5 @@ function compareUserAnswerToPartyAnswers() {
     clickableButtons.forEach(element => {
         element.hidden = true;
     });
+    partyFilterField.hidden = true;
 }
-
-//TODO:
-
-// De gebruiker kan partijen filteren in de resultaten
