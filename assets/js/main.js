@@ -190,6 +190,8 @@ function changeStatement() {
             statementId++;
             setStatement(subjects[statementId]);
         } else {
+            var nextBtn = document.getElementById("nextBtn");
+            nextBtn.disabled = false;
             recordStatementImportance();
         }
     }
@@ -338,11 +340,9 @@ function compareUserAnswerToPartyAnswers() {
         }
     }
 
-    for (var i = 0; i < partyOpinion.length; i++) {
-        if (partyOpinion[i] == null) {
-            partyOpinion.splice(i, 1);
-        }
-    }
+    partyOpinion = partyOpinion.filter(function (item) {
+        return item != null;
+    });
 
     partyOpinion.sort(function (a, b) { return b.score - a.score });
 
