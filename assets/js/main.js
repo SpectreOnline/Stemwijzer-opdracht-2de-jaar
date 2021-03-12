@@ -253,6 +253,11 @@ function generateCheckboxList(givenArray, givenField) {
         var newCheckbox = document.createElement("input");
         newCheckbox.type = "checkbox";
         newCheckbox.value = loopCount;
+        if (givenArray == parties) {
+            newCheckbox.dataset.secular = parties[loopCount].secular;
+            newCheckbox.dataset.partysize = parties[loopCount].size;
+        }
+
         newCheckbox.setAttribute("class", `mr-2 ml-1 ${checkboxClass}`);
         var newLabel = document.createElement("label");
         if (object.title != null) {
@@ -269,6 +274,36 @@ function generateCheckboxList(givenArray, givenField) {
         newCheckbox = null;
         loopCount++;
     });
+
+    if (givenArray == parties) {
+        var btnSecular = document.createElement("button");
+        var partyCheckboxes = document.querySelectorAll(".partyCheckbox");
+        btnSecular.setAttribute("class", "btn btn-primary");
+        btnSecular.innerHTML = "Selecteer alle seculaire partijen";
+        btnSecular.onclick = function () {
+            partyCheckboxes.forEach(element => {
+                if (element.dataset.secular == "true") {
+                    element.checked = true;
+                }
+            });
+        }
+
+        var btnSize = document.createElement("button");
+        var partyCheckboxes = document.querySelectorAll(".partyCheckbox");
+        btnSize.setAttribute("class", "btn btn-primary");
+        btnSize.innerHTML = "Selecteer alle grote partijen";
+        btnSize.onclick = function () {
+            partyCheckboxes.forEach(element => {
+                if (element.dataset.partysize != "0") {
+                    element.checked = true;
+                }
+            });
+        }
+
+        givenField.append(btnSize);
+        givenField.append(btnSecular);
+    }
+
 }
 
 /*
